@@ -1,8 +1,7 @@
-package kr.ac.kopo.kyg.projectkyg.validator;
+package kr.ac.kopo.kyg.projectkyg;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 
 
 @SpringBootApplication

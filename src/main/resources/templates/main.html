@@ -1,10 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메인페이지</title>
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+            background-image: url('/images/image1.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        html {
+            height: 100%;
+        }
+
+        .banner {
+            background-color: #333;
+            color: white;
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px 40px;
+            border-radius: 30px;
+            text-align: center;
+        }
+        .banner ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+        .banner ul li {
+            margin: 0 15px;
+            font-size: 19px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .banner ul li.left {
+            float: left;
+        }
+
+        .banner ul li.right {
+            float: right;
+        }
+        .banner ul li a {
+            text-decoration: none;
+            color: inherit;
+        }
+        .title-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: black;
+            margin-top: 0px;
+            width: 100%;
+            height: 50px;
+            color: white;
+            font-size: 20px;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        .title-text {
+            line-height: 50px;
+            flex-grow: 1;
+            text-align: center;
+        }
+        #clock{
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .end {
+            background-color: black;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            text-align: center;
+            color: white;
+            font-size: 20px;
+            line-height: 50px;
+            z-index: 1000;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            padding-bottom: 50px;
+            box-sizing: border-box;
+        }
+
+        .string{
+            font-size: 20px;
+            font-weight: bolder;
+            color: #333;
+        }
+        .main{
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333;
+            text-align: center;
+        }
+        .main h1, .main h2 {
+            margin: 0;
+        }
+        .logout-button {
+            padding: 5px 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+    <script>
+        function intervalNow() {
+            let now = new Date();
+            if (obj) {
+                obj.innerHTML = now.toString();
+            }
+        }
+
+        let obj;
+
+        function makeClock() {
+            obj = document.getElementById("clock");
+            setInterval(intervalNow, 1000);
+        }
+
+        function changeTitle() {
+            let h2str = document.querySelector(".main h2");
+            if (h2str) {
+                h2str.innerHTML = "이 곳은 메인 페이지입니다."; // 텍스트 수정
+            }
+        }
+
+        function onPageLoad() {
+            makeClock();
+            changeTitle();
+        }
+    </script>
 </head>
-<body>
-$END$
+<body onload="onPageLoad()">
+<div>
+    <div class="title-area">
+        <p id="clock"></p>
+        <form th:action="@{/logout}" method="post">
+        <button type="submit" class="logout-button">
+            로그아웃
+        </button>
+    </form>
+    </div>
+
+    <div class="banner">
+        <ul>
+            <li class="left">메인</li>
+            <li class="center">메뉴1</li>
+            <li class="center">메뉴2</li>
+            <li class="center">메뉴3</li>
+            <li class="center">메뉴4</li>
+            <li class="center">메뉴5</li>
+            <li class="right">정보</li>
+        </ul>
+    </div>
+    <div class="main">
+        <h2>이 곳은 메인 페이지입니다.</h2> <h1>Welcome!</h1> <p class="string">로그인에 성공하셨습니다.<br>환영합니다!</p> </div>
+
+    <p class="end">스프링부트 로그인 페이지 과제 // 학번 : 2401110246 // 이름 : 김용건</p> </div>
 </body>
 </html>
