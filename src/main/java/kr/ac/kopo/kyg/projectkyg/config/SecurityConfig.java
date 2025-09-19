@@ -17,30 +17,36 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public UserDetailsService users(){
+    public UserDetailsService users() {
         UserDetails admin = User.builder()
-                .username("kyg")
-                .password(passwordEncoder().encode("kyg1234"))
+                .username("admin")
+                .password(passwordEncoder().encode("admin1234"))
                 .roles("ADMIN")
                 .build();
-        return new InMemoryUserDetailsManager(admin);
+
+        UserDetails user = User.builder()
+                .username("user")
+                .password(passwordEncoder().encode("user1234"))
+                .roles("USER")
+                .build();
+
+        return new InMemoryUserDetailsManager(admin, user);
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        authorize -> authorize
-                                .requestMatchers("/main").hasRole("ADMIN")
-                                .anyRequest().permitAll()
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/main", "/submit", "/assignments").hasRole("ADMIN")
+                        .anyRequest().permitAll()
                 )
-//            .formLogin(Customizer.withDefaults());
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
@@ -49,10 +55,9 @@ public class SecurityConfig {
                         .usernameParameter("username")
                         .passwordParameter("password")
                 )
-                .logout(
-                        logout -> logout
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("/login")
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
                 );
 
         return http.build();

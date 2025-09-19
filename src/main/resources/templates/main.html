@@ -1,296 +1,132 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>메인페이지</title>
+    <title>과제 제출 메인</title>
     <style>
-        body{
-            margin: 0;
-            padding: 0;
-            /* 배경 이미지 속성 주석 처리 유지 */
-            background-image: url('/images/background2.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-        }
-        html {
-            height: 100%;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: #f7f8fa; margin: 0; padding: 0; color: #333; }
+        header { background: #3b82f6; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; }
+        header nav a { color: white; margin-left: 1rem; text-decoration: none; font-weight: 500; }
+        header nav a:hover { text-decoration: underline; }
+        main { padding: 2rem; }
 
-        .banner {
-            background-color: #333;
-            color: white;
-            width: 80%;
-            margin: 10px auto;
-            padding: 10px 40px;
-            border-radius: 30px;
-            text-align: center;
-        }
-        .banner ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            overflow: hidden;
-        }
-        .banner ul li {
-            margin: 0 15px;
-            font-size: 19px;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .banner ul li.left {
-            float: left;
-        }
-
-        .banner ul li.right {
-            float: right;
-        }
-        .title-area {
+        /* 카드 스타일 */
+        .assignment-card {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: black;
-            margin-top: 0px;
-            width: 100%;
-            height: 50px;
-            color: white;
-            font-size: 20px;
-            padding: 0 20px;
-            box-sizing: border-box;
-        }
-        #clock{
-            color: white;
-            font-size: 15px;
-            font-weight: bold;
-        }
-        .end {
-            background-color: black;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 50px;
-            text-align: center;
-            color: white;
-            font-size: 20px;
-            line-height: 50px;
-            z-index: 1000;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            padding-bottom: 50px;
-            box-sizing: border-box;
-        }
-
-        .string{
-            font-size: 20px;
-            font-weight: bolder;
-            color: white;
-        }
-        .main{
-            position: absolute;
-            top: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            text-align: center;
-            width: 80%;
-            max-width: 1200px;
-        }
-        .main h1, .main h2 {
-            margin: 0;
-        }
-        .logout-button {
-            padding: 5px 10px;
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        /* --- 카드 섹션 스타일 --- */
-        .card-section {
-            margin-top: 50px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            justify-content: center;
-            align-items: start;
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
-        }
-
-        .card-item {
-            background-color: #fff;
+            flex-direction: row;
+            background: white;
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            padding: 20px;
-            height: 420px; /* 고정 높이로 설정하여 카드 크기 유지. 필요에 따라 조정 가능. */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden; /* 카드를 벗어나는 내용은 숨김 */
-        }
-
-        /* --- 책 제목 스타일 --- */
-        .book-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            text-align: center;
-            line-height: 1.3;
-        }
-
-        .card-item img {
-            width: 100%;
-            height: 300px; /* 이미지 높이를 충분히 확보 */
-            object-fit: cover; /* 이미지가 잘리지 않도록 cover 유지 (충분한 높이 확보) */
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-
-        .card-item p {
-            font-size: 14px;
-            color: #555;
-            margin: 0;
-            padding: 0 5px;
-            flex-grow: 1;
-            height: 85px; /* 설명 텍스트 영역의 높이 고정 (약 5~6줄 정도 표시 가능) */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-sizing: border-box;
             overflow: hidden;
-            display: -webkit-box; /* 여러 줄 텍스트 숨김을 위해 사용 */
-            -webkit-line-clamp: 5; /* 5줄까지만 표시하고 넘치는 내용은 줄임표 처리 */
-            -webkit-box-orient: vertical;
-            text-overflow: ellipsis; /* ...으로 잘리는 효과 */
-            align-items: flex-start;
-            justify-content: flex-start;
-            line-height: 1.4;
         }
+
+        .assignment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .assignment-card div {
+            padding: 0.5rem 1rem;
+            border-right: 1px solid #ccc;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .assignment-card div:last-child {
+            border-right: none;
+        }
+
+        /* flex 조정: 과목명 작게, 과제명 길게, 마감일 2/3, 설명 유지 */
+        .subject { flex: 0.4; font-weight: bold; }
+        .assignment-name { flex: 0.9; font-weight: bold; }
+        .due-date { flex: 0.6; font-weight: bold; }
+        .description { flex: 5; }
+
+        /* 컬럼 헤더 스타일 */
+        .assignment-header {
+            display: flex;
+            flex-direction: row;
+            background: #e0e7ff;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        .assignment-header div {
+            padding: 0.5rem 1rem;
+            border-right: 1px solid #ccc;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .assignment-header div.subject { flex: 0.4; }
+        .assignment-header div.assignment-name { flex: 0.9; }
+        .assignment-header div.due-date { flex: 0.8; }
+        .assignment-header div.description { flex: 5; }
+        .assignment-header div:last-child { border-right: none; }
+
+        .btn-container { text-align: right; margin-bottom: 1rem; }
+        .btn-primary { background: #3b82f6; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; text-decoration: none; font-weight: 500; transition: background 0.2s; }
+        .btn-primary:hover { background: #2563eb; }
+
+        footer { text-align: center; padding: 1rem; background: #e5e7eb; margin-top: 2rem; font-size: 0.9rem; }
     </style>
-    <script>
-        function intervalNow() {
-            let now = new Date();
-            if (obj) {
-                obj.innerHTML = now.toString();
-            }
-        }
-
-        let obj;
-
-        function makeClock() {
-            obj = document.getElementById("clock");
-            setInterval(intervalNow, 1000);
-        }
-
-        function changeTitle() {
-            let h2str = document.querySelector(".main h2");
-            if (h2str) {
-                h2str.innerHTML = "이 곳은 메인 페이지입니다.";
-            }
-        }
-
-        function onPageLoad() {
-            makeClock();
-            changeTitle();
-        }
-    </script>
 </head>
-<body onload="onPageLoad()">
-<div>
-    <div class="title-area">
-        <p id="clock"></p>
-        <form th:action="@{/logout}" method="post">
-            <button type="submit" class="logout-button">
-                로그아웃
-            </button>
-        </form>
+<body>
+<header>
+    <h1>📌 과제 제출 시스템</h1>
+    <nav>
+        <span sec:authorize="isAuthenticated()">안녕하세요, <span sec:authentication="name"></span> 님</span>
+        <a sec:authorize="isAuthenticated()" th:href="@{/logout}">로그아웃</a>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}">로그인</a>
+    </nav>
+</header>
+
+<main>
+    <!-- ADMIN 전용 등록 버튼 -->
+    <div sec:authorize="hasRole('ADMIN')" class="btn-container">
+        <a class="btn-primary" th:href="@{/submit}">➕ 과제 등록</a>
     </div>
 
-    <div class="banner">
-        <ul>
-            <li class="left">메인</li>
-            <li class="center">메뉴1</li>
-            <li class="center">메뉴2</li>
-            <li class="center">메뉴3</li>
-            <li class="center">메뉴4</li>
-            <li class="center">메뉴5</li>
-            <li class="right">정보</li>
-        </ul>
-    </div>
-    <div class="main">
-        <h2>이 곳은 메인 페이지입니다.</h2>
-        <h1>Welcome!</h1>
-        <p class="string">로그인에 성공하셨습니다.<br>환영합니다!</p>
+    <section>
+        <h2>등록된 과제 목록</h2>
 
-        <div class="card-section">
-            <div class="card-item">
-                <p class="book-title">타나토노트</p>
-                <img th:src="@{/images/book1.jpg}" alt="카드 이미지 1">
-                <p>인류는 살아있는 상태로 '죽음의 세계'를 탐험할 수 있을까?
-                    주인공 미카엘 팽송과 동료들은 죽음 이후의 세계를 과학적으로 탐사하는 '타나토노트(죽음 여행자)'가 되어,
-                    사후 세계의 지도 제작이라는 전례 없는 도전에 나선다.
-                    그 여정 속에서 인류는 종교, 과학, 철학의 경계를 넘나들며,
-                    죽음에 대한 근본적인 진실과 마주하게 된다.</p>
-            </div>
-            <div class="card-item">
-                <p class="book-title">천사들의 제국</p>
-                <img th:src="@{/images/book2.jpg}" alt="카드 이미지 2">
-                <p>"죽음 이후, 인간은 어디로 가는가?"
-                    ‘타나토노트’들의 사후 세계 탐험이 계속되는 가운데, 이번에는 '천사'의 시점에서 죽음의 세계를 바라본다.
-                    주인공 미카엘 팽송은 죽음 이후, **'영혼 관리자'**가 되어 살아있는 인간들을 이끄는 천사로 성장한다.
-                    천사들은 인간의 삶을 조용히 지켜보며, 올바른 길로 인도하는 역할을 맡지만,
-                    인간의 자유 의지와 천사의 개입 사이에서 끊임없는 갈등이 벌어진다.
-                    인생의 의미, 선과 악의 경계, 인간 존재의 가치에 대한 깊은 질문을 던지는 작품.</p>
-            </div>
-            <div class="card-item">
-                <p class="book-title">신</p>
-                <img th:src="@{/images/book3.jpg}" alt="카드 이미지 3">
-                <p>"인간이 신이 된다면, 어떤 세상을 만들까?"
-                    죽음과 천사의 세계를 거쳐, 이번에는 신들의 학교에 입학한 미카엘 팽송의 이야기.
-                    미카엘은 신 후보생이 되어 자신만의 세계를 창조하고, 인간, 동물, 문명을 직접 설계하며 신으로 성장하는 시험을 치른다.
-                    그러나 신들의 세계에도 경쟁과 음모, 질투가 가득하고,
-                    미카엘은 ‘완벽한 신’이 되기 위해 치열한 경쟁과 내면의 고민을 마주하게 된다.
-
-                    ‘타나토노트’와 ‘천사들의 제국’을 넘어, 이번에는 창조주가 되는 것의 책임을 다루는 베르베르 철학의 정점.</p>
-            </div>
-            <div class="card-item">
-                <p class="book-title">개미</p>
-                <img th:src="@{/images/book4.jpg}" alt="카드 이미지 4">
-                <p>인간은 개미를 단순한 곤충이라 여겼지만, 개미들은 인간이 상상도 못할 거대한 문명을 이루고 있었다.
-                    한 남자가 유산으로 받은 삼촌의 집에서 의문의 실종 사건을 추적하며 점점 개미 세계의 비밀에 다가서고,
-                    동시에 개미 사회는 위협적인 외부의 적과 싸우며 생존을 건 전쟁을 벌인다.</p>
-            </div>
-            <div class="card-item">
-                <p class="book-title">제3인류</p>
-                <img th:src="@{/images/book5.jpg}" alt="카드 이미지 5">
-                <p>"지구의 다음 진화는 무엇인가?"
-                    인류는 환경 파괴, 전쟁, 인구 과잉으로 멸망의 위기에 처한다.
-                    이를 극복하기 위해 과학자들은 ‘제3의 인류’, 즉 **초소형 인간(약 17cm 크기)**을 탄생시킨다.
-                    이 작은 인간들은 더 적은 자원으로 살아가며, 새로운 문명을 만들어간다.
-                    그러나 기존 인류(제2인류)와의 갈등, 차별, 생존 경쟁이 시작되고,
-                    결국 인류의 미래는 어떤 방향으로 흘러가야 하는지에 대한 거대한 질문이 던져진다.</p>
-            </div>
-            <div class="card-item">
-                <p class="book-title">상대적이며 절대적인 지식의 백과사전</p>
-                <img th:src="@{/images/book6.jpg}" alt="카드 이미지 6">
-                <p>"인간의 지식, 상식, 의문, 기이한 이야기들을 모두 모았다"
-                    베르베르 소설 속에서 자주 등장하는 가상의 ‘백과사전’을 실제로 엮어낸 작품.
-                    철학, 과학, 역사, 종교, 사회 등 다양한 분야의 지식과 흥미로운 에피소드를
-                    짧고 간결하게 정리하여, 어느 페이지를 펼쳐도 새로운 시선과 생각거리를 제공한다.</p>
-            </div>
+        <!-- 컬럼 헤더 -->
+        <div class="assignment-header">
+            <div class="subject">과목명</div>
+            <div class="assignment-name">과제명</div>
+            <div class="due-date">마감일</div>
+            <div class="description">설명</div>
         </div>
-    </div>
 
-    <p class="end">스프링부트 로그인 페이지 과제 // 학번 : 2401110246 // 이름 : 김용건</p>
-</div>
+        <!-- 카드 반복 -->
+        <div th:each="a : ${assignments}">
+            <a th:href="@{'/assignment/' + ${a['id']}}" class="assignment-card">
+                <div class="subject" th:text="${a['subjectName']}">과목명</div>
+                <div class="assignment-name" th:text="${a['studentName']}">과제명</div>
+                <div class="due-date" th:text="${a['submittedAt']}">마감일</div>
+                <div class="description" th:text="${a['description']}">설명</div>
+            </a>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>© 2025 과제 제출 시스템</p>
+</footer>
 </body>
 </html>

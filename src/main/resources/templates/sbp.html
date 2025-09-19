@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>과제 제출 페이지</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f7f8fa; margin: 0; padding: 0; color: #333; }
+    header { background: #3b82f6; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+    main { max-width: 600px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    h2 { text-align: center; }
+    .field { margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.3rem; font-weight: bold; }
+    input, textarea { width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc; }
+    .btn-primary { background: #3b82f6; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; text-decoration: none; font-weight: 500; cursor: pointer; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-container { text-align: center; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>📌 과제 제출</h1>
+</header>
+
+<main>
+  <h2 th:text="${assignment['studentName']} + ' 과제'">과제명</h2>
+
+  <div class="field">
+    <label>과목명</label>
+    <p th:text="${assignment['subjectName']}">과목명</p>
+  </div>
+
+  <div class="field">
+    <label>설명</label>
+    <p th:text="${assignment['description']}">설명</p>
+  </div>
+
+  <div class="field">
+    <label>마감일</label>
+    <p th:text="${assignment['submittedAt']}">마감일</p>
+  </div>
+
+  <form action="#" method="post">
+    <div class="field">
+      <label>파일 업로드</label>
+      <input type="file" name="file" required>
+    </div>
+
+    <div class="btn-container">
+      <button type="submit" class="btn-primary">제출</button>
+    </div>
+  </form>
+</main>
+</body>
+</html>
