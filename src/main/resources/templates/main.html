@@ -3,92 +3,26 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>과제 제출 메인</title>
+    <title>팀 관리 메인</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f7f8fa; margin: 0; padding: 0; color: #333; }
         header { background: #3b82f6; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-        header h1 { margin: 0; }
+        header h1 { margin: 0; font-size: 1.5rem; }
         header nav a { color: white; margin-left: 1rem; text-decoration: none; font-weight: 500; }
         header nav a:hover { text-decoration: underline; }
         main { padding: 2rem; }
-
-        /* 카드 스타일 */
-        .assignment-card {
-            display: flex;
-            flex-direction: row;
-            background: white;
-            margin-bottom: 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            border: 1px solid #ddd;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        .assignment-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .assignment-card div {
-            padding: 0.5rem 1rem;
-            border-right: 1px solid #ccc;
-            box-sizing: border-box;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .assignment-card div:last-child {
-            border-right: none;
-        }
-
-        /* flex 조정: 과목명 작게, 과제명 길게, 마감일 2/3, 설명 유지 */
-        .subject { flex: 0.4; font-weight: bold; }
-        .assignment-name { flex: 0.9; font-weight: bold; }
-        .due-date { flex: 0.6; font-weight: bold; }
-        .description { flex: 5; }
-
-        /* 컬럼 헤더 스타일 */
-        .assignment-header {
-            display: flex;
-            flex-direction: row;
-            background: #e0e7ff;
-            font-weight: bold;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            box-sizing: border-box;
-        }
-
-        .assignment-header div {
-            padding: 0.5rem 1rem;
-            border-right: 1px solid #ccc;
-            box-sizing: border-box;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .assignment-header div.subject { flex: 0.4; }
-        .assignment-header div.assignment-name { flex: 0.9; }
-        .assignment-header div.due-date { flex: 0.8; }
-        .assignment-header div.description { flex: 5; }
-        .assignment-header div:last-child { border-right: none; }
-
         .btn-container { text-align: right; margin-bottom: 1rem; }
-        .btn-primary { background: #3b82f6; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; text-decoration: none; font-weight: 500; transition: background 0.2s; }
+        .btn-primary { background: #3b82f6; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; text-decoration: none; font-weight: 500; transition: background 0.2s; margin-left: 0.5rem; }
         .btn-primary:hover { background: #2563eb; }
-
+        .team-card { display: flex; justify-content: space-between; background: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 1rem; border: 1px solid #ddd; transition: transform 0.2s ease, box-shadow 0.2s ease; text-decoration: none; color: inherit; }
+        .team-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .team-name { font-weight: bold; font-size: 1.1rem; }
         footer { text-align: center; padding: 1rem; background: #e5e7eb; margin-top: 2rem; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 <header>
-    <h1>📌 과제 제출 시스템</h1>
+    <h1>📌 팀 관리 시스템</h1>
     <nav>
         <span sec:authorize="isAuthenticated()">안녕하세요, <span sec:authentication="name"></span> 님</span>
         <a sec:authorize="isAuthenticated()" th:href="@{/logout}">로그아웃</a>
@@ -97,36 +31,26 @@
 </header>
 
 <main>
-    <!-- ADMIN 전용 등록 버튼 -->
-    <div sec:authorize="hasRole('ADMIN')" class="btn-container">
-        <a class="btn-primary" th:href="@{/submit}">➕ 과제 등록</a>
+    <div class="btn-container">
+        <a class="btn-primary" th:href="@{/teams/create}">➕ 팀 만들기</a>
+        <a class="btn-primary" th:href="@{/teams/join}">🡆 팀 참가</a>
     </div>
 
     <section>
-        <h2>등록된 과제 목록</h2>
-
-        <!-- 컬럼 헤더 -->
-        <div class="assignment-header">
-            <div class="subject">과목명</div>
-            <div class="assignment-name">과제명</div>
-            <div class="due-date">마감일</div>
-            <div class="description">설명</div>
+        <h2>내가 참가한 팀</h2>
+        <div th:if="${teams == null or #lists.isEmpty(teams)}" style="margin-top:1rem; color: #666;">
+            아직 참가한 팀이 없습니다.
         </div>
-
-        <!-- 카드 반복 -->
-        <div th:each="a : ${assignments}">
-            <a th:href="@{'/assignment/' + ${a['id']}}" class="assignment-card">
-                <div class="subject" th:text="${a['subjectName']}">과목명</div>
-                <div class="assignment-name" th:text="${a['studentName']}">과제명</div>
-                <div class="due-date" th:text="${a['submittedAt']}">마감일</div>
-                <div class="description" th:text="${a['description']}">설명</div>
+        <div th:each="team : ${teams}">
+            <a th:href="@{'/projects/' + ${team.id}}" class="team-card">
+                <span class="team-name" th:text="${team.name}">팀 이름</span>
             </a>
         </div>
     </section>
 </main>
 
 <footer>
-    <p>© 2025 과제 제출 시스템</p>
+    <p>© 2025 팀 관리 시스템</p>
 </footer>
 </body>
 </html>

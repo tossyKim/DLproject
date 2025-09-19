@@ -44,7 +44,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/main", "/submit", "/assignments").hasRole("ADMIN")
+                        .requestMatchers("/main").hasAnyRole("USER", "ADMIN") // USER와 ADMIN 모두 접근 가능
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .formLogin(formLogin -> formLogin
